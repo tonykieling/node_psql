@@ -1,0 +1,25 @@
+{
+  "name": "node_psql",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/tonykieling/node_psql.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/tonykieling/node_psql/issues"
+  },
+  "homepage": "https://github.com/tonykieling/node_psql#readme",
+  "devDependencies": {
+    "knex": "^0.17.5",
+    "nodemon": "^1.19.1",
+    "pg": "^7.11.0"
+  }
+}
