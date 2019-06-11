@@ -30,23 +30,29 @@ const getUserByName = (req, res) => {
   })
 }
 
-const getUserByEmail = email => {
-  email = 'bob@email.com'
-  console.log("inside getUserByEmail, email: ", email)
-  // res.send(req.query)
-  pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
-    // if (error)
-    //   throw error
-console.log("result.rows == ", result.rows)
-    return ( result.rows > 0 ? true : false)
-  })
+const getUserByEmail = email => {  
+  return new Promise((res, rej) => {
+    pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
+      console.log("result.rows.length == ", result.rows.length)
+      // console.log("typeof result: ", typeof result.rows)
+      // console.log("+++ ", Object.keys(result.rows).length)
+      console.log(!result.rows.length)
+      if (result.rows.length) {
+        res(true)
+      } else {
+        res(false)
+      }
+      // (Object.keys(result).length > 0) ? res(true) : res(false)
+    })
+    })
 }
 
-createUser = (req, res) => {
+const createUser = (req, res) => {
   const user = req.body
-  console.log(`user = ${JSON.stringify(user)}`)
+  // console.log(`user = ${JSON.stringify(user)}`)
   if (!getUserByEmail(user.email)) {
-    pool.query('INSERT INTO users (name, email, userAdmin) VALUES ($1, $2, $3)', [user.name, user.email, false], (error, result) => {
+    pool.query('INSERT INTO users (name, email, userAdmin) VALUES ($1, $2, $3)',
+      [user.name, user.email, false], (error, result) => {
       if (error) {
         res.send("something wrong, please try again")
         throw error
