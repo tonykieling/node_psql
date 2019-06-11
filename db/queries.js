@@ -10,6 +10,7 @@ const pool = new Pool({
 })
 
 const getUsers = (request, response) => {
+console.log("getUsers function")
   pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
     if (error) {
       throw error
@@ -18,7 +19,19 @@ const getUsers = (request, response) => {
   })
 }
 
+const getUserByName = (req, res) => {
+  const name = req.query.name
+  console.log("inside getUserByName, user: ", name)
+  // res.send(req.query)
+  pool.query('SELECT * FROM users WHERE name = $1', [name], (error, result) => {
+    if (error)
+      throw error
+    // console.log("result: ", (result.rows))
+    res.status(200).json(result.rows)
+  })
+}
 
 module.exports = {
-  getUsers
+  getUsers,
+  getUserByName
 }

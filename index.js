@@ -21,6 +21,7 @@ app.get("/", (req, res) => {
 })
 
 app.get("/users", dbQueries.getUsers)
+app.get("/user", dbQueries.getUserByName)
 
 app.post("/", (req, res) => {
   console.log("req.body", req.body)
