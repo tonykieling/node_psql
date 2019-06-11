@@ -26,12 +26,40 @@ const getUserByName = (req, res) => {
   pool.query('SELECT * FROM users WHERE name = $1', [name], (error, result) => {
     if (error)
       throw error
-    // console.log("result: ", (result.rows))
     res.status(200).json(result.rows)
   })
 }
 
+const getUserByEmail = email => {
+  email = 'bob@email.com'
+  console.log("inside getUserByEmail, email: ", email)
+  // res.send(req.query)
+  pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
+    // if (error)
+    //   throw error
+console.log("result.rows == ", result.rows)
+    return ( result.rows > 0 ? true : false)
+  })
+}
+
+createUser = (req, res) => {
+  const user = req.body
+  console.log(`user = ${JSON.stringify(user)}`)
+  if (!getUserByEmail(user.email)) {
+    pool.query('INSERT INTO users (name, email, userAdmin) VALUES ($1, $2, $3)', [user.name, user.email, false], (error, result) => {
+      if (error) {
+        res.send("something wrong, please try again")
+        throw error
+      }
+      res.send(`user ${user.email} has been created successfully`)
+    })
+  } else
+    res.send(`user ${user.email} already exist`)
+
+}
+
 module.exports = {
   getUsers,
-  getUserByName
+  getUserByName,
+  createUser
 }

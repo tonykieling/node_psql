@@ -23,10 +23,7 @@ app.get("/", (req, res) => {
 app.get("/users", dbQueries.getUsers)
 app.get("/user", dbQueries.getUserByName)
 
-app.post("/", (req, res) => {
-  console.log("req.body", req.body)
-  res.send(req.body)
-})
+app.post("/user", dbQueries.createUser)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
