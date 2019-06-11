@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon index.js"
   },
   "repository": {
     "type": "git",
@@ -18,8 +19,10 @@
   },
   "homepage": "https://github.com/tonykieling/node_psql#readme",
   "devDependencies": {
+    "dotenv": "^8.0.0",
     "knex": "^0.17.5",
     "nodemon": "^1.19.1",
     "pg": "^7.11.0"
-  }
+  },
+  "dependencies": {}
 }

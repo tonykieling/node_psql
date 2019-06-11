@@ -4,5 +4,6 @@
 install http://postgresguide.com/setup/install.html  
 #psql  
 
-npm i --save-dev nodemon knex pg
+npm i --save-dev nodemon knex pg dotenv  
+mpm i knex -g  
 
