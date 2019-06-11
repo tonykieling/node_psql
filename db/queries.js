@@ -31,26 +31,25 @@ const getUserByName = (req, res) => {
 }
 
 const getUserByEmail = email => {  
+  console.log("email: ", email)
   return new Promise((res, rej) => {
     pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
-      console.log("result.rows.length == ", result.rows.length)
-      // console.log("typeof result: ", typeof result.rows)
-      // console.log("+++ ", Object.keys(result.rows).length)
-      console.log(!result.rows.length)
-      if (result.rows.length) {
-        res(true)
-      } else {
-        res(false)
-      }
-      // (Object.keys(result).length > 0) ? res(true) : res(false)
+      // if (!!(result.rows.length)) {
+      //   res(true)
+      // } else {
+      //   res(false)
+      // }
+      (result.rows.length) ? res(true) : res(false)
     })
     })
 }
 
-const createUser = (req, res) => {
+const createUser = async (req, res) => {
   const user = req.body
-  // console.log(`user = ${JSON.stringify(user)}`)
-  if (!getUserByEmail(user.email)) {
+  const emailExist = await getUserByEmail(user.email)
+  if (!emailExist) {
+    // console.log("all rigth")
+    // res.send("it supposed to be added")
     pool.query('INSERT INTO users (name, email, userAdmin) VALUES ($1, $2, $3)',
       [user.name, user.email, false], (error, result) => {
       if (error) {
