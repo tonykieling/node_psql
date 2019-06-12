@@ -7,20 +7,20 @@ const pool = new Pool({
   database: process.env.DB_NAME,
   password: process.env.DB_PASS,
   port: 5432,
-})
+});
 
 const getUsers = (request, response) => {
-console.log("getUsers function")
+console.log("getUsers function");
   pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
     if (error) {
       throw error
     }
     response.status(200).json(results.rows)
-  })
+  });
 }
 
 const getUserByName = (req, res) => {
-  const name = req.query.name
+  const name = req.query.name;
   pool.query('SELECT * FROM users WHERE name = $1', [name], (error, result) => {
     if (error)
       throw error
@@ -29,21 +29,32 @@ const getUserByName = (req, res) => {
     else
       res.send("No user")
     
-  })
+  });
 }
 
-const getUserByEmail = email => {  
+const getUserByEmail = email => {
+  console.log("email is ", email);
+  // email += " "
   return new Promise((res, rej) => {
-    pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
-      // console.log(result.rows[0].id)
-      // if (!!(result.rows.length)) {
-        // res(true)
-      // } else {
-      //   res(false)
-      // }
-      (result.rows.length) ? res(result.rows[0].id) : res(false)
-    })
-    })
+    try {
+      // pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
+        // if (!!(result.rows.length)) {
+          // console.log("id: ", result.rows[0].id);
+          // error = "ERRRRRRRRRRRRRRRRRRR"
+          throw new Error('Required');
+          // throw "myerror"
+        //   res(result.rows[0].id)
+        // } else {
+        //   console.log("result.rows[0].id")
+        //   res(false)
+        // }
+        // (result.rows.length) ? res(result.rows[0].id) : res(false);
+      // })
+    } catch (err) {
+      console.log("MSG: ", err.message);
+      res("ERR");
+    }
+  })
 }
 
 const createUser = async (req, res) => {
@@ -74,12 +85,21 @@ const deactivateUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const user = req.body
-  const userIdDB = await getUserByEmail(user.actual)
-  if (userIdDB) {
-    pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [user.name, user.email, userIdDB])
-    res.send(`user ${user.email} has been updated`)
-  } else 
-    res.send("No user to update")
+  console.log("user", JSON.stringify(user))
+    try {
+const userIdDB = await getUserByEmail(user.actual)
+if (userIdDB == "ERR") {
+  console.log("ERRRRRRRRRRR")
+  res.send("Something bad has happened. Please, try again")
+    }
+    if (userIdDB) {
+      pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [user.name, user.email, userIdDB])
+      res.send(`user ${user.email} has been updated`)
+    } else 
+      res.send("No user to update")
+  } catch (err) {
+    res.send("Something bad has happened. Please, try again")
+  }
 }
 
 const grantAdminPermission = async (req, res) => {
