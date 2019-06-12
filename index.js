@@ -28,6 +28,9 @@ app.delete("/user", dbQueries.deactivateUser)
 
 app.put("/user", dbQueries.updateUser)
 
+app.put("/useradmin", dbQueries.grantAdminPermission)
+
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })

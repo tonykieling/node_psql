@@ -74,7 +74,6 @@ const deactivateUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const user = req.body
-  console.log("user: ", JSON.stringify(user))
   const userIdDB = await getUserByEmail(user.actual)
   if (userIdDB) {
     pool.query('UPDATE users SET name = $1, email = $2 WHERE id = $3', [user.name, user.email, userIdDB])
@@ -84,7 +83,13 @@ const updateUser = async (req, res) => {
 }
 
 const grantAdminPermission = async (req, res) => {
-
+  const user = req.body
+  const userIdDB = await getUserByEmail(user.email)
+  if (userIdDB) {
+    pool.query('UPDATE users SET useradmin = $1 WHERE id = $2', [true, userIdDB])
+    res.send(`user ${user.email} has been granted admin permission`)
+  } else 
+    res.send("No user to grant permission")
 }
 
 module.exports = {
