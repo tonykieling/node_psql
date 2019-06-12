@@ -26,6 +26,8 @@ app.post("/user", dbQueries.createUser)
 
 app.delete("/user", dbQueries.deactivateUser)
 
+app.put("/user", dbQueries.updateUser)
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
 })
