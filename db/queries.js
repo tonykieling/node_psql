@@ -21,25 +21,27 @@ console.log("getUsers function")
 
 const getUserByName = (req, res) => {
   const name = req.query.name
-  console.log("inside getUserByName, user: ", name)
-  // res.send(req.query)
   pool.query('SELECT * FROM users WHERE name = $1', [name], (error, result) => {
     if (error)
       throw error
-    res.status(200).json(result.rows)
+    if (result.rows.length)
+      res.status(200).json(result.rows)
+    else
+      res.send("No user")
+    
   })
 }
 
 const getUserByEmail = email => {  
-  console.log("email: ", email)
   return new Promise((res, rej) => {
     pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
+      // console.log(result.rows[0].id)
       // if (!!(result.rows.length)) {
-      //   res(true)
+        // res(true)
       // } else {
       //   res(false)
       // }
-      (result.rows.length) ? res(true) : res(false)
+      (result.rows.length) ? res(result.rows[0].id) : res(false)
     })
     })
 }
@@ -48,9 +50,7 @@ const createUser = async (req, res) => {
   const user = req.body
   const emailExist = await getUserByEmail(user.email)
   if (!emailExist) {
-    // console.log("all rigth")
-    // res.send("it supposed to be added")
-    pool.query('INSERT INTO users (name, email, userAdmin) VALUES ($1, $2, $3)',
+    pool.query('INSERT INTO users (name, email, userActive, userAdmin) VALUES ($1, $2, true, $3)',
       [user.name, user.email, false], (error, result) => {
       if (error) {
         res.send("something wrong, please try again")
@@ -59,12 +59,26 @@ const createUser = async (req, res) => {
       res.send(`user ${user.email} has been created successfully`)
     })
   } else
-    res.send(`user ${user.email} already exist`)
-
+    res.send(`user ${user.email} already exists`)
 }
+
+const deactivateUser = async (req, res) => {
+  const user = req.body
+  const userIdDB = await getUserByEmail(user.email)
+  console.log("userid: ", userIdDB)
+  console.log("user: ", JSON.stringify(user))
+  if (userIdDB) {
+    pool.query('UPDATE users SET useractive = $1 WHERE id = $2', [false, userIdDB])
+    res.send(`user ${user.email} has been updated`)
+  } else 
+    res.send("No user to 'delete', actually, deactivate")
+}
+
+
 
 module.exports = {
   getUsers,
   getUserByName,
-  createUser
+  createUser,
+  deactivateUser
 }

@@ -21,6 +21,7 @@ table user
   ID SERIAL PRIMARY KEY,  
   name VARCHAR(30),  
   email VARCHAR(30),  
+  userActive BOOL,
   userAdmin BOOL
 );  
 

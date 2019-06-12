@@ -16,14 +16,15 @@ app.use(bodyParser.urlencoded({
 // const usersRoutes = require('./temp.js')
 // app.use("/api/users", usersRoutes(knex));
 
-app.get("/", (req, res) => {
-  res.send("this is '/'\nnewline")
-})
+app.get("/", (req, res) => res.send("this is '/'\nnewline"))
 
 app.get("/users", dbQueries.getUsers)
+
 app.get("/user", dbQueries.getUserByName)
 
 app.post("/user", dbQueries.createUser)
+
+app.delete("/user", dbQueries.deactivateUser)
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`)
