@@ -10,7 +10,7 @@ const pool = new Pool({
 });
 
 const getUsers = (request, response) => {
-console.log("getUsers function");
+console.log("inside getUsers");
   pool.query('SELECT * FROM users ORDER BY id ASC', (error, results) => {
     if (error) {
       throw error
@@ -20,6 +20,7 @@ console.log("getUsers function");
 }
 
 const getUserByName = (req, res) => {
+  console.log("inside getUsersByName");
   const name = req.query.name;
   pool.query('SELECT * FROM users WHERE name = $1', [name], (error, result) => {
     if (error)
@@ -35,47 +36,57 @@ const getUserByName = (req, res) => {
   });
 }
 
-const getUserByEmail = email => {
+const getUserByEmail = async email => {
+  console.log("inside getUsersByEmail");
   return new Promise((res, rej) => {
     try {
       pool.query('SELECT * FROM users WHERE email = $1', [email], (error, result) => {
         // if (!!(result.rows.length)) {
           // console.log("id: ", result.rows[0].id);
           // throw new Error(error);     //////////////////////////just in case to tes catch/error
-          // throw "err"
-        //   res(result.rows[0].id)
+          // throw "err";
+        //   res(result.rows[0].id);
         // } else {
-        //   console.log("result.rows[0].id")
-        //   res(false)
+          // console.log(result.rows[0].id);
+        //   res(false);
         // }
         (result.rows.length) ? res(result.rows[0].id) : res(false);
+        // return((result.rows[0].id) ? (result.rows[0].id) : (false));
       });
     } catch (err) {
       console.log("Error message: ", err.message);
       rej("ERR");
+      return;
     }
   })
 }
 
 const createUser = async (req, res) => {
+  console.log("inside createUser");
   const user = req.body
   const emailExist = await getUserByEmail(user.email)
-  if (!emailExist) {
-    pool.query('INSERT INTO users (name, email, userActive, userAdmin) VALUES ($1, $2, true, $3)',
+  try {
+    if (!emailExist) {
+      pool.query('INSERT INTO users (name, email, userActive, userAdmin) VALUES ($1, $2, true, $3)',
       [user.name, user.email, false], (error, result) => {
       if (error) {
         res.send("something wrong, please try again");
         throw error;
       }
       res.send(`user ${user.email} has been created successfully`);
-      return;
     });
-  } else
-    res.send(`user ${user.email} already exists`);
+    } else
+      res.send(`user ${user.email} already exists`);
     return;
+  } catch (err) {
+    console.log("err message at updateUser");
+    res.send("Something bad has happened. Please, try it again");
+    return;
+  }
 }
 
 const deactivateUser = async (req, res) => {
+  console.log("inside deactivateUser");
   const user = req.body;
   const userIdDB = await getUserByEmail(user.email);
   if (userIdDB) {
@@ -88,6 +99,7 @@ const deactivateUser = async (req, res) => {
 }
 
 const updateUser = async (req, res) => {
+  console.log("inside updateUser");
   const user = req.body;
   try {
     const userIdDB = await getUserByEmail(user.actual);
@@ -99,22 +111,29 @@ const updateUser = async (req, res) => {
       res.send("No user to update");
       return;
   } catch (err) {
-    console.log("err message at ypdateUser");
+    console.log("err message at updateUser");
     res.send("Something bad has happened. Please, try it again");
     return;
   }
 }
 
 const grantAdminPermission = async (req, res) => {
+  console.log("inside grantAdminPersission");  
   const user = req.body;
   const userIdDB = await getUserByEmail(user.email);
-  if (userIdDB) {
-    pool.query('UPDATE users SET useradmin = $1 WHERE id = $2', [true, userIdDB]);
-    res.send(`user ${user.email} has been granted admin permission`);
+  try {
+    if (userIdDB) {
+      pool.query('UPDATE users SET useradmin = $1 WHERE id = $2', [true, userIdDB]);
+      res.send(`user ${user.email} has been granted admin permission`);
+    } else 
+      res.send("No user to grant permission");
     return;
-  } else 
-    res.send("No user to grant permission");
+  } catch (err) {
+    console.log("err message at grantAdminPermission");
+    res.send("Something bad has happened. Please, try it again");
     return;
+  }
+
 }
 
 module.exports = {
