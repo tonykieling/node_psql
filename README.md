@@ -13,7 +13,7 @@ role nodepq
 password nodepq  
   CREATE ROLE nodepq WITH LOGIN PASSWORD 'nodepq';
 database nodepq  
-  ALTER ROLE me CREATEDB; // it allows the role nodepq creates a db  
+  ALTER ROLE nodepq CREATEDB; // it allows the role nodepq creates a db  
   CREATE DATABASE nodepq;  
 table user  
   \c nodepq  
@@ -21,11 +21,11 @@ table user
   ID SERIAL PRIMARY KEY,  
   name VARCHAR(30),  
   email VARCHAR(30),  
-  userActive BOOL,
-  userAdmin BOOL
+  user_active BOOL,
+  user_admin BOOL
 );  
 
-INSERT INTO users (name, email, userAdmin)  
+INSERT INTO users (name, email, user_admin)  
 VALUES ('bob', 'bob@email.com', TRUE), ('sue','sue@email.com', FALSE);  
 
 
